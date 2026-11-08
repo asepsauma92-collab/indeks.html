@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MPI Sastra Puisi & Berpikir Komputasional - Kelas 9 SMP</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Fonts for Pixar Aesthetic -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        pixarYellow: '#FFD166',
+                        pixarOrange: '#FF9F1C',
+                        pixarBlue: '#118AB2',
+                        pixarDarkBlue: '#073B4C',
+                        pixarGreen: '#06D6A0',
+                        pixarRed: '#EF476F',
+                        pixarPurple: '#8338EC'
+                    },
+                    fontFamily: {
+                        sans: ['Fredoka', 'Poppins', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Fredoka', 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #e0f7fa 0%, #fff9c4 100%);
+            min-height: 100vh;
+            color: #073B4C;
+        }
+
+        /* 3D Pixar Button & Card Styles */
+        .btn-pixar {
+            transition: all 0.15s ease-in-out;
+            box-shadow: 0px 6px 0px rgba(0, 0, 0, 0.2);
+        }
+        .btn-pixar:active {
+            transform: translateY(4px);
+            box-shadow: 0px 2px 0px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-blue { background-color: #118AB2; color: white; border-bottom: 4px solid #0e6c8c; }
+        .btn-orange { background-color: #FF9F1C; color: white; border-bottom: 4px solid #c9790e; }
+        .btn-green { background-color: #06D6A0; color: white; border-bottom: 4px solid #049c74; }
+        .btn-red { background-color: #EF476F; color: white; border-bottom: 4px solid #b83453; }
+        .btn-purple { background-color: #8338EC; color: white; border-bottom: 4px solid #6326bd; }
+
+        .card-pixar {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 12px 30px -5px rgba(7, 59, 76, 0.15), 0 4px 0px #e2e8f0;
+            border: 3px solid #F1F5F9;
+        }
+
+        /* Mobile Drag-Drop Select Active State */
+        .drag-card-selected {
+            ring: 4px;
+            ring-color: #FF9F1C;
+            transform: scale(1.05);
+            background-color: #FEF3C7 !important;
+            border-color: #F59E0B !important;
+        }
+
+        /* Shake animation for wrong drop */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-6px); }
+            40%, 80% { transform: translateX(6px); }
+        }
+        .animate-shake {
+            animation: shake 0.4s ease-in-out;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #FF9F1C;
+            border-radius: 10px;
+        }
+
+        /* Floating Animation */
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(1deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+        .animate-float {
+            animation: float 4s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen justify-between selection:bg-pixarYellow selection:text-pixarDarkBlue">
+
+    <!-- TOP HEADER / NAVIGATION -->
+    <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b-4 border-pixarYellow shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="showSection('hero')">
+                <div class="w-12 h-12 bg-gradient-to-tr from-pixarOrange to-pixarYellow rounded-2xl flex items-center justify-center text-white text-2xl shadow-md transform rotate-3">
+                    <i class="fa-solid fa-book-open-reader"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl md:text-2xl font-bold tracking-wide text-pixarDarkBlue">Pena Magic Puisi</h1>
+                    <p class="text-xs text-slate-500 font-medium">MPI Bahasa Indonesia Kelas 9 SMP (Fase D)</p>
+                </div>
+            </div>
+
+            <!-- Audio Control -->
+            <div class="flex items-center space-x-2">
+                <button id="bgmToggleBtn" onclick="toggleBGM()" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-pixarDarkBlue rounded-xl font-semibold text-sm transition flex items-center space-x-2 border border-slate-300">
+                    <i id="bgmIcon" class="fa-solid fa-volume-xmark text-red-500"></i>
+                    <span id="bgmText">Musik Off</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- NAVIGATION MENU BAR -->
+        <nav class="bg-pixarDarkBlue text-white">
+            <div class="max-w-7xl mx-auto px-2 flex overflow-x-auto no-scrollbar py-2 gap-2 text-sm md:text-base font-semibold">
+                <button onclick="showSection('panduan')" class="nav-btn px-4 py-2 rounded-xl hover:bg-pixarBlue transition flex items-center gap-2 whitespace-nowrap">
+                    <i class="fa-solid fa-compass text-pixarYellow"></i> Panduan
+                </button>
+                <button onclick="showSection('tujuan')" class="nav-btn px-4 py-2 rounded-xl hover:bg-pixarBlue transition flex items-center gap-2 whitespace-nowrap">
+                    <i class="fa-solid fa-bullseye text-pixarRed"></i> Tujuan Pembelajaran
+                </button>
+                <button onclick="showSection('materi-puisi')" class="nav-btn px-4 py-2 rounded-xl hover:bg-pixarBlue transition flex items-center gap-2 whitespace-nowrap">
+                    <i class="fa-solid fa-feather-pointed text-pixarGreen"></i> Materi Puisi
+                </button>
+                <button onclick="showSection('materi-algoritma')" class="nav-btn px-4 py-2 rounded-xl hover:bg-pixarBlue transition flex items-center gap-2 whitespace-nowrap">
+                    <i class="fa-solid fa-code text-pixarOrange"></i> Algoritma & Puisi
+                </button>
+                <button onclick="showSection('gim-zone')" class="nav-btn px-4 py-2 bg-pixarOrange text-white rounded-xl hover:bg-amber-600 transition flex items-center gap-2 whitespace-nowrap shadow-sm">
+                    <i class="fa-solid fa-gamepad text-yellow-200"></i> Zona Gim Interaktif
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="max-w-7xl mx-auto px-4 py-6 flex-grow w-full">
+
+        <!-- SECTION: HERO / WELCOME -->
+        <section id="hero" class="tab-content block">
+            <div class="card-pixar p-6 md:p-10 bg-gradient-to-br from-amber-50 via-white to-sky-50 relative overflow-hidden">
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+                    <div class="md:col-span-7 space-y-4">
+                        <span class="px-4 py-1.5 bg-pixarYellow/40 text-amber-800 rounded-full font-semibold text-xs md:text-sm tracking-wide inline-block border border-pixarYellow">
+                            ✨ Pembelajaran Interaktif Kelas 9 (Fase D)
+                        </span>
+                        <h2 class="text-3xl md:text-5xl font-extrabold text-pixarDarkBlue leading-tight">
+                            Jelajahi Indahnya <span class="text-pixarOrange">Puisi</span> & Belajar Sastra!
+                        </h2>
+                        <p class="text-slate-600 text-base md:text-lg leading-relaxed">
+                            Halo sahabat cerdas kelas 9! Selamat datang di aplikasi pembelajaran sastra puisi interaktif. Mari eksplorasi struktur fisik, batin, jenis-jenis puisi, serta simulasi pengurutan larik dengan cara yang menyenangkan!
+                        </p>
+
+                        <div class="pt-4 flex flex-wrap gap-4">
+                            <button onclick="showSection('materi-puisi')" class="btn-pixar btn-orange px-6 py-3 rounded-2xl font-bold text-lg flex items-center gap-2">
+                                <i class="fa-solid fa-book-open"></i> Mulai Belajar Puisi
+                            </button>
+                            <button onclick="showSection('gim-zone')" class="btn-pixar btn-green px-6 py-3 rounded-2xl font-bold text-lg flex items-center gap-2">
+                                <i class="fa-solid fa-gamepad"></i> Mainkan Gim Sastra
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Visual Illustration Avatar 3D Pixar Style: Siswa Membaca Buku -->
+                    <div class="md:col-span-5 flex justify-center">
+                        <div class="relative w-64 h-64 md:w-80 md:h-80 bg-gradient-to-tr from-sky-400 to-indigo-500 rounded-full p-4 animate-float shadow-2xl flex items-center justify-center border-8 border-white">
+                            <div class="text-center text-white space-y-2">
+                                <!-- Pixar Style Reading Book SVG Illustration -->
+                                <svg class="w-36 h-36 md:w-44 md:h-44 mx-auto text-yellow-300 drop-shadow-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <circle cx="12" cy="3" r="1.5" fill="currentColor"/>
+                                </svg>
+                                <div class="bg-white/20 backdrop-blur-md rounded-xl p-2 text-xs md:text-sm font-semibold border border-white/30">
+                                    "Belajar Sastra Puisi Jadi Lebih Seru & Mudah!" 📖✨
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: PANDUAN PENGGUNAAN -->
+        <section id="panduan" class="tab-content hidden">
+            <div class="card-pixar p-6 md:p-8 space-y-6">
+                <div class="flex items-center space-x-3 border-b-4 border-pixarYellow pb-3">
+                    <i class="fa-solid fa-compass text-3xl text-pixarOrange"></i>
+                    <h2 class="text-2xl md:text-3xl font-extrabold text-pixarDarkBlue">Panduan Penggunaan Aplikasi</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-amber-50 p-5 rounded-2xl border-2 border-amber-200 space-y-3">
+                        <div class="w-10 h-10 bg-pixarOrange text-white rounded-xl flex items-center justify-center font-bold text-xl">1</div>
+                        <h3 class="font-bold text-lg text-pixarDarkBlue">Pelajari Materi</h3>
+                        <p class="text-sm text-slate-600">Pahami pengertian, ciri-ciri, jenis-jenis puisi, serta unsur struktur fisik dan batin di menu <b>Materi Puisi</b>.</p>
+                    </div>
+
+                    <div class="bg-sky-50 p-5 rounded-2xl border-2 border-sky-200 space-y-3">
+                        <div class="w-10 h-10 bg-pixarBlue text-white rounded-xl flex items-center justify-center font-bold text-xl">2</div>
+                        <h3 class="font-bold text-lg text-pixarDarkBlue">Simulasi Algoritma</h3>
+                        <p class="text-sm text-slate-600">Coba fitur interaktif pencarian kata puisi (Linear & Binary Search) dan pengurutan larik (Bubble, Insertion, Selection Sort).</p>
+                    </div>
+
+                    <div class="bg-emerald-50 p-5 rounded-2xl border-2 border-emerald-200 space-y-3">
+                        <div class="w-10 h-10 bg-pixarGreen text-white rounded-xl flex items-center justify-center font-bold text-xl">3</div>
+                        <h3 class="font-bold text-lg text-pixarDarkBlue">Tantangan Gim Interaktif</h3>
+                        <p class="text-sm text-slate-600">Uji kemampuanmu lewat 3 gim seru: <b>Drag & Drop</b>, <b>Wordwall Spinner</b>, dan <b>Baamboozle Team Challenge</b>!</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: TUJUAN PEMBELAJARAN -->
+        <section id="tujuan" class="tab-content hidden">
+            <div class="card-pixar p-6 md:p-8 space-y-6">
+                <div class="flex items-center space-x-3 border-b-4 border-pixarRed pb-3">
+                    <i class="fa-solid fa-bullseye text-3xl text-pixarRed"></i>
+                    <h2 class="text-2xl md:text-3xl font-extrabold text-pixarDarkBlue">Tujuan Pembelajaran (Fase D)</h2>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="p-4 bg-red-50 rounded-2xl border border-red-200 flex gap-4 items-start">
+                        <div class="w-8 h-8 rounded-full bg-pixarRed text-white flex-shrink-0 flex items-center justify-center font-bold">1</div>
+                        <div>
+                            <h4 class="font-bold text-pixarDarkBlue">Memahami Unsur Pembentuk Puisi</h4>
+                            <p class="text-sm text-slate-600">Peserta didik mampu mengidentifikasi unsur-unsur pembangun puisi (Struktur Fisik & Struktur Batin) dengan tepat dan cermat.</p>
+                        </div>
+                    </div>
+
+                    <div class="p-4 bg-amber-50 rounded-2xl border border-amber-200 flex gap-4 items-start">
+                        <div class="w-8 h-8 rounded-full bg-pixarOrange text-white flex-shrink-0 flex items-center justify-center font-bold">2</div>
+                        <div>
+                            <h4 class="font-bold text-pixarDarkBlue">Menganalisis Ciri & Jenis Puisi</h4>
+                            <p class="text-sm text-slate-600">Peserta didik dapat membedakan ciri-ciri puisi lama, puisi baru, dan puisi kontemporer berdasarkan kaidah bahasanya.</p>
+                        </div>
+                    </div>
+
+                    <div class="p-4 bg-sky-50 rounded-2xl border border-sky-200 flex gap-4 items-start">
+                        <div class="w-8 h-8 rounded-full bg-pixarBlue text-white flex-shrink-0 flex items-center justify-center font-bold">3</div>
+                        <div>
+                            <h4 class="font-bold text-pixarDarkBlue">Integrasi Logika Algoritma</h4>
+                            <p class="text-sm text-slate-600">Peserta didik mampu mengaplikasikan algoritma pencarian dan pengurutan dalam menyusun dan merapikan teks larik puisi.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: MATERI UTAMA PUISI -->
+        <section id="materi-puisi" class="tab-content hidden space-y-6">
+            <div class="card-pixar p-6 md:p-8">
+                <div class="flex items-center space-x-3 border-b-4 border-pixarGreen pb-3 mb-6">
+                    <i class="fa-solid fa-feather-pointed text-3xl text-pixarGreen"></i>
+                    <h2 class="text-2xl md:text-3xl font-extrabold text-pixarDarkBlue">Materi Puisi Nusantara</h2>
+                </div>
+
+                <!-- Sub-Tabs Navigation for Puisi -->
+                <div class="flex flex-wrap gap-2 mb-6">
+                    <button onclick="showPuisiSub('pengertian')" class="puisi-sub-btn px-4 py-2 rounded-xl bg-pixarGreen text-white font-bold text-sm">Pengertian & Ciri</button>
+                    <button onclick="showPuisiSub('jenis')" class="puisi-sub-btn px-4 py-2 rounded-xl bg-slate-100 text-slate-700 font-bold text-sm hover:bg-slate-200">Jenis-Jenis Puisi</button>
+                    <button onclick="showPuisiSub('struktur-fisik')" class="puisi-sub-btn px-4 py-2 rounded-xl bg-slate-100 text-slate-700 font-bold text-sm hover:bg-slate-200">Struktur Fisik</button>
+                    <button onclick="showPuisiSub('struktur-batin')" class="puisi-sub-btn px-4 py-2 rounded-xl bg-slate-100 text-slate-700 font-bold text-sm hover:bg-slate-200">Struktur Batin</button>
+                </div>
+
+                <!-- Sub-Content 1: Pengertian & Ciri -->
+                <div id="puisi-pengertian" class="puisi-sub-content block space-y-6">
+                    <div class="bg-emerald-50 p-6 rounded-2xl border-2 border-emerald-200">
+                        <h3 class="text-xl font-bold text-emerald-900 mb-2"><i class="fa-solid fa-quote-left mr-2"></i>Apa itu Puisi?</h3>
+                        <p class="text-slate-700 leading-relaxed">
+                            <b>Puisi</b> adalah karya sastra indah yang diungkapkan dengan perasaan mendalam, menggunakan kata-kata bermakna kiasan (konotatif), terikat oleh irama, rima, penyusunan bait dan larik.
+                        </p>
+                    </div>
+
+                    <h4 class="text-lg font-bold text-pixarDarkBlue mt-4">Ciri-Ciri Utama Puisi:</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="p-4 bg-white rounded-xl shadow-sm border border-slate-200 flex items-start gap-3">
+                            <i class="fa-solid fa-circle-check text-pixarGreen text-xl mt-1"></i>
+                            <div>
+                                <h5 class="font-bold text-slate-800">Bahasa Padat & Kiasan</h5>
+                                <p class="text-xs text-slate-600">Menggunakan kata konotatif bernilai estetika tinggi.</p>
+                            </div>
+                        </div>
+                        <div class="p-4 bg-white rounded-xl shadow-sm border border-slate-200 flex items-start gap-3">
+                            <i class="fa-solid fa-circle-check text-pixarGreen text-xl mt-1"></i>
+                            <div>
+                                <h5 class="font-bold text-slate-800">Bentuk Larik & Bait</h5>
+                                <p class="text-xs text-slate-600">Penulisan tidak berbentuk paragraf melainkan susunan baris/larik.</p>
+                            </div>
+                        </div>
+                        <div class="p-4 bg-white rounded-xl shadow-sm border border-slate-200 flex items-start gap-3">
+                            <i class="fa-solid fa-circle-check text-pixarGreen text-xl mt-1"></i>
+                            <div>
+                                <h5 class="font-bold text-slate-800">Rima & Irama</h5>
+                                <p class="text-xs text-slate-600">Memiliki alunan musik keindahan bunyi kata di awal/akhir baris.</p>
+                            </div>
+                        </div>
+                        <div class="p-4 bg-white rounded-xl shadow-sm border border-slate-200 flex items-start gap-3">
+                            <i class="fa-solid fa-circle-check text-pixarGreen text-xl mt-1"></i>
+                            <div>
+                                <h5 class="font-bold text-slate-800">Majas (Gaya Bahasa)</h5>
+                                <p class="text-xs text-slate-600">Memanfaatkan ungkapan seperti personifikasi, metafora, dan hiperbola.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sub-Content 2: Jenis-jenis Puisi -->
+                <div id="puisi-jenis" class="puisi-sub-content hidden space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="p-5 bg-orange-50 rounded-2xl border-2 border-orange-200">
+                            <span class="px-3 py-1 bg-pixarOrange text-white text-xs font-bold rounded-full">Klasik</span>
+                            <h4 class="text-xl font-bold text-slate-800 mt-2">1. Puisi Lama</h4>
+                            <p class="text-xs text-slate-600 mt-2">Terikat aturan ketat rima dan jumlah baris.</p>
+                            <ul class="text-xs text-slate-700 mt-3 space-y-1 list-disc list-inside">
+                                <li><b>Pantun:</b> Rima a-b-a-b, 4 baris.</li>
+                                <li><b>Gurindam:</b> Rima a-a, 2 baris nasihat.</li>
+                                <li><b>Syair:</b> Rima a-a-a-a, berisi cerita.</li>
+                            </ul>
+                        </div>
+
+                        <div class="p-5 bg-sky-50 rounded-2xl border-2 border-sky-200">
+                            <span class="px-3 py-1 bg-pixarBlue text-white text-xs font-bold rounded-full">Modern</span>
+                            <h4 class="text-xl font-bold text-slate-800 mt-2">2. Puisi Baru</h4>
+                            <p class="text-xs text-slate-600 mt-2">Bentuknya lebih bebas tidak terikat aturan ketat.</p>
+                            <ul class="text-xs text-slate-700 mt-3 space-y-1 list-disc list-inside">
+                                <li><b>Balada:</b> Berisi cerita/kisah.</li>
+                                <li><b>Elegi:</b> Ungkapan kesedihan/duka.</li>
+                                <li><b>Romansa:</b> Ungkapan kasih sayang.</li>
+                            </ul>
+                        </div>
+
+                        <div class="p-5 bg-purple-50 rounded-2xl border-2 border-purple-200">
+                            <span class="px-3 py-1 bg-pixarPurple text-white text-xs font-bold rounded-full">Kekinian</span>
+                            <h4 class="text-xl font-bold text-slate-800 mt-2">3. Puisi Kontemporer</h4>
+                            <p class="text-xs text-slate-600 mt-2">Mengutamakan kebebasan ekspresi tanpa aturan baku.</p>
+                            <ul class="text-xs text-slate-700 mt-3 space-y-1 list-disc list-inside">
+                                <li><b>Tipografi:</b> Menampilkan bentuk visual unik.</li>
+                                <li><b>Mbeling:</b> Puisi humor atau kelakar.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sub-Content 3: Struktur Fisik -->
+                <div id="puisi-struktur-fisik" class="puisi-sub-content hidden space-y-4">
+                    <h4 class="text-lg font-bold text-pixarDarkBlue">Struktur Fisik Puisi (Wujud yang Terlihat)</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                            <h5 class="font-bold text-pixarBlue"><i class="fa-solid fa-align-left mr-1"></i> Tipografi</h5>
+                            <p class="text-xs text-slate-600 mt-1">Bentuk format visual puisi (tata letak margin & baris tepi).</p>
+                        </div>
+                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                            <h5 class="font-bold text-pixarBlue"><i class="fa-solid fa-spell-check mr-1"></i> Diksi</h5>
+                            <p class="text-xs text-slate-600 mt-1">Pemilihan kata yang cermat dan bernilai estetika.</p>
+                        </div>
+                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                            <h5 class="font-bold text-pixarBlue"><i class="fa-solid fa-eye mr-1"></i> Imaji (Penginderaan)</h5>
+                            <p class="text-xs text-slate-600 mt-1">Kata yang memicu indera penglihatan, pendengaran, perabaan.</p>
+                        </div>
+                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                            <h5 class="font-bold text-pixarBlue"><i class="fa-solid fa-cube mr-1"></i> Kata Konkret</h5>
+                            <p class="text-xs text-slate-600 mt-1">Kata yang memicu imaji nyata pembaca.</p>
+                        </div>
+                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                            <h5 class="font-bold text-pixarBlue"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Gaya Bahasa (Majas)</h5>
+                            <p class="text-xs text-slate-600 mt-1">Penggunaan gaya kiasan (Personifikasi, Metafora, Hiperbola).</p>
+                        </div>
+                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                            <h5 class="font-bold text-pixarBlue"><i class="fa-solid fa-music mr-1"></i> Rima / Irama</h5>
+                            <p class="text-xs text-slate-600 mt-1">Persamaan bunyi dari awal hingga akhir baris puisi.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sub-Content 4: Struktur Batin -->
+                <div id="puisi-struktur-batin" class="puisi-sub-content hidden space-y-4">
+                    <h4 class="text-lg font-bold text-pixarDarkBlue">Struktur Batin Puisi (Makna Tersirat)</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="p-4 bg-rose-50 rounded-xl border border-rose-200">
+                            <h5 class="font-bold text-rose-800"><i class="fa-solid fa-heart mr-1"></i> Tema (Sense)</h5>
+                            <p class="text-xs text-slate-600 mt-1">Gagasan pokok atau pesan utama penyair.</p>
+                        </div>
+                        <div class="p-4 bg-rose-50 rounded-xl border border-rose-200">
+                            <h5 class="font-bold text-rose-800"><i class="fa-solid fa-face-smile mr-1"></i> Rasa (Feeling)</h5>
+                            <p class="text-xs text-slate-600 mt-1">Sikap perasaan penyair terhadap isi puisinya (sedih, gembira).</p>
+                        </div>
+                        <div class="p-4 bg-rose-50 rounded-xl border border-rose-200">
+                            <h5 class="font-bold text-rose-800"><i class="fa-solid fa-bullhorn mr-1"></i> Nada (Tone)</h5>
+                            <p class="text-xs text-slate-600 mt-1">Sikap penyair terhadap pembaca (menasihati, merayu, mengguru).</p>
+                        </div>
+                        <div class="p-4 bg-rose-50 rounded-xl border border-rose-200">
+                            <h5 class="font-bold text-rose-800"><i class="fa-solid fa-envelope-open-text mr-1"></i> Amanat (Intent)</h5>
+                            <p class="text-xs text-slate-600 mt-1">Pesan moral atau nasihat bermanfaat untuk pembaca.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: INTEGRASI ALGORITMA & PUISI -->
+        <section id="materi-algoritma" class="tab-content hidden space-y-6">
+            <div class="card-pixar p-6 md:p-8">
+                <div class="flex items-center space-x-3 border-b-4 border-pixarOrange pb-3 mb-6">
+                    <i class="fa-solid fa-code text-3xl text-pixarOrange"></i>
+                    <div>
+                        <h2 class="text-2xl md:text-3xl font-extrabold text-pixarDarkBlue">Pencarian & Pengurutan Larik Puisi</h2>
+                        <p class="text-xs text-slate-500">Visualisasi Logika Algoritma dalam Pembelajaran Sastra</p>
+                    </div>
+                </div>
+
+                <!-- ALGORITMA PENCAARIAN INTERAKTIF -->
+                <div class="space-y-4 mb-8">
+                    <h3 class="text-xl font-bold text-pixarDarkBlue flex items-center gap-2">
+                        <i class="fa-solid fa-magnifying-glass text-pixarBlue"></i> 1. Algoritma Pencarian (Search Algorithm)
+                    </h3>
+                    
+                    <div class="p-5 bg-slate-100 rounded-2xl space-y-4">
+                        <div class="flex flex-wrap items-center justify-between gap-3">
+                            <label class="text-sm font-bold text-slate-700">Cari Kata Kunci Larik Puisi:</label>
+                            <div class="flex gap-2">
+                                <input id="searchInput" type="text" value="Bunga" placeholder="Masukkan kata..." class="px-3 py-1.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-pixarBlue">
+                                <button onclick="runLinearSearch()" class="btn-pixar btn-blue px-3 py-1.5 rounded-xl text-xs font-bold">Linear Search</button>
+                                <button onclick="runBinarySearch()" class="btn-pixar btn-purple px-3 py-1.5 rounded-xl text-xs font-bold">Binary Search</button>
+                            </div>
+                        </div>
+
+                        <!-- Search Display Area -->
+                        <div id="searchDisplay" class="grid grid-cols-2 md:grid-cols-4 gap-2">
+                            <!-- Dynamic Cards -->
+                        </div>
+
+                        <div id="searchLogs" class="p-3 bg-slate-900 rounded-xl text-xs font-mono text-amber-300 min-h-[50px]">
+                            Pilih metode pencarian untuk melihat langkah algoritma!
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ALGORITMA PENGURUTAN VISUALIZER -->
+                <div class="space-y-4">
+                    <h3 class="text-xl font-bold text-pixarDarkBlue flex items-center gap-2">
+                        <i class="fa-solid fa-sort text-pixarGreen"></i> 2. Visualisasi Algoritma Pengurutan Larik Puisi
+                    </h3>
+                    <p class="text-xs text-slate-600">Urutkan baris-baris puisi di bawah ini berdasarkan <b>panjang karakter/kata</b>!</p>
+
+                    <div class="bg-slate-900 text-white p-6 rounded-2xl shadow-inner space-y-4">
+                        <div class="flex flex-wrap items-center justify-between gap-3">
+                            <div class="flex gap-2">
+                                <button onclick="setAlgo('bubble')" id="btn-bubble" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-pixarOrange text-white">Bubble Sort</button>
+                                <button onclick="setAlgo('insertion')" id="btn-insertion" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-700 text-slate-300">Insertion Sort</button>
+                                <button onclick="setAlgo('selection')" id="btn-selection" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-700 text-slate-300">Selection Sort</button>
+                            </div>
+                            <button onclick="runSortSimulation()" class="btn-pixar btn-green px-4 py-1.5 rounded-lg font-bold text-xs">
+                                <i class="fa-solid fa-play mr-1"></i> Jalankan Animasi Sort
+                            </button>
+                        </div>
+
+                        <!-- Sort Display Area -->
+                        <div id="sortDisplay" class="space-y-2 py-4">
+                            <!-- Dynamic Bars -->
+                        </div>
+
+                        <div id="sortLogs" class="p-3 bg-slate-800 rounded-xl text-xs font-mono text-amber-300 h-20 overflow-y-auto">
+                            Klik 'Jalankan Animasi Sort' untuk memulai pengurutan!
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: ZONA GIM INTERAKTIF -->
+        <section id="gim-zone" class="tab-content hidden space-y-6">
+            <!-- Game Selection Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- GIM 1 CARD -->
+                <div onclick="switchGame('drag')" class="card-pixar p-6 cursor-pointer hover:scale-105 transition transform border-t-8 border-pixarBlue text-center space-y-3">
+                    <div class="w-16 h-16 mx-auto bg-sky-100 text-pixarBlue rounded-2xl flex items-center justify-center text-3xl font-bold">
+                        <i class="fa-solid fa-hand-pointer"></i>
+                    </div>
+                    <h3 class="text-xl font-extrabold text-pixarDarkBlue">Gim 1: Drag & Drop</h3>
+                    <p class="text-xs text-slate-500">Kelompokkan Unsur Fisik & Batin Puisi!</p>
+                    <span class="inline-block px-4 py-1 bg-sky-100 text-pixarBlue font-bold rounded-full text-xs">Mainkan</span>
+                </div>
+
+                <!-- GIM 2 CARD -->
+                <div onclick="switchGame('wordwall')" class="card-pixar p-6 cursor-pointer hover:scale-105 transition transform border-t-8 border-pixarOrange text-center space-y-3">
+                    <div class="w-16 h-16 mx-auto bg-amber-100 text-pixarOrange rounded-2xl flex items-center justify-center text-3xl font-bold">
+                        <i class="fa-solid fa-dharmachakra"></i>
+                    </div>
+                    <h3 class="text-xl font-extrabold text-pixarDarkBlue">Gim 2: Wordwall Spinner</h3>
+                    <p class="text-xs text-slate-500">Putar roda kuis pertanyaan puisi!</p>
+                    <span class="inline-block px-4 py-1 bg-amber-100 text-pixarOrange font-bold rounded-full text-xs">Mainkan</span>
+                </div>
+
+                <!-- GIM 3 CARD -->
+                <div onclick="switchGame('baamboozle')" class="card-pixar p-6 cursor-pointer hover:scale-105 transition transform border-t-8 border-pixarGreen text-center space-y-3">
+                    <div class="w-16 h-16 mx-auto bg-emerald-100 text-pixarGreen rounded-2xl flex items-center justify-center text-3xl font-bold">
+                        <i class="fa-solid fa-cubes"></i>
+                    </div>
+                    <h3 class="text-xl font-extrabold text-pixarDarkBlue">Gim 3: Baamboozle Challenge</h3>
+                    <p class="text-xs text-slate-500">Tantangan kelompok kotak angka berpoin!</p>
+                    <span class="inline-block px-4 py-1 bg-emerald-100 text-pixarGreen font-bold rounded-full text-xs">Mainkan</span>
+                </div>
+            </div>
+
+            <!-- GAME PLAY AREA -->
+            <div id="gameContainer" class="card-pixar p-6 md:p-8 bg-white min-h-[420px]">
+                
+                <!-- GIM 1: DRAG AND DROP IMPLEMENTATION -->
+                <div id="game-drag" class="game-module block space-y-6">
+                    <div class="flex flex-wrap justify-between items-center border-b pb-3 gap-2">
+                        <div>
+                            <h3 class="text-xl font-bold text-pixarDarkBlue"><i class="fa-solid fa-hand-pointer text-pixarBlue mr-2"></i> Gim Drag & Drop: Klasifikasi Unsur Puisi</h3>
+                            <p class="text-xs text-slate-500">Tarik kartu ATAU Ketuk kartu lalu ketuk kotak tujuan (Mobile Friendly)!</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span id="dragScore" class="px-4 py-1.5 bg-pixarYellow font-bold text-slate-800 rounded-full text-sm shadow-sm">Skor: 0</span>
+                            <button onclick="resetDragGame()" class="px-3 py-1.5 bg-slate-200 hover:bg-slate-300 rounded-xl font-semibold text-xs text-slate-700">Riset / Main Lagi</button>
+                        </div>
+                    </div>
+
+                    <!-- Draggable Items Container -->
+                    <div id="dragItems" class="flex flex-wrap gap-2.5 p-4 bg-slate-100 rounded-2xl min-h-[90px] items-center border-2 border-slate-200">
+                        <!-- Dynamic items rendered via JS -->
+                    </div>
+
+                    <!-- Drop Targets -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div id="drop-target-fisik" onclick="handleTargetClick('fisik')" ondrop="drop(event, 'fisik')" ondragover="allowDrop(event)" class="p-5 bg-sky-50 rounded-2xl border-2 border-dashed border-sky-400 min-h-[180px] space-y-2 cursor-pointer transition hover:bg-sky-100/70">
+                            <h4 class="font-bold text-sky-900 border-b border-sky-200 pb-2 flex justify-between items-center">
+                                <span><i class="fa-solid fa-eye mr-2"></i>Struktur Fisik (Wujud Tampak)</span>
+                                <span class="text-xs font-normal text-sky-600">(Ketuk di sini)</span>
+                            </h4>
+                            <div id="target-fisik" class="flex flex-wrap gap-2"></div>
+                        </div>
+
+                        <div id="drop-target-batin" onclick="handleTargetClick('batin')" ondrop="drop(event, 'batin')" ondragover="allowDrop(event)" class="p-5 bg-rose-50 rounded-2xl border-2 border-dashed border-rose-400 min-h-[180px] space-y-2 cursor-pointer transition hover:bg-rose-100/70">
+                            <h4 class="font-bold text-rose-900 border-b border-rose-200 pb-2 flex justify-between items-center">
+                                <span><i class="fa-solid fa-heart mr-2"></i>Struktur Batin (Makna Tersirat)</span>
+                                <span class="text-xs font-normal text-rose-600">(Ketuk di sini)</span>
+                            </h4>
+                            <div id="target-batin" class="flex flex-wrap gap-2"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GIM 2: WORDWALL SPINNER IMPLEMENTATION -->
+                <div id="game-wordwall" class="game-module hidden space-y-6">
+                    <div class="flex justify-between items-center border-b pb-3">
+                        <h3 class="text-xl font-bold text-pixarDarkBlue"><i class="fa-solid fa-dharmachakra text-pixarOrange mr-2"></i> Gim Wordwall: Roda Kuis Sastra Puisi</h3>
+                        <span id="spinnerScore" class="px-4 py-1.5 bg-pixarOrange text-white font-bold rounded-full text-sm">Skor: 0</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                        <div class="md:col-span-5 flex flex-col items-center">
+                            <div class="relative">
+                                <canvas id="wheelCanvas" width="280" height="280" class="rounded-full shadow-lg border-4 border-white"></canvas>
+                            </div>
+                            <button onclick="spinWheel()" id="spinBtn" class="mt-4 btn-pixar btn-orange px-6 py-2.5 rounded-2xl font-bold text-base">
+                                <i class="fa-solid fa-rotate mr-2"></i> Putar Roda!
+                            </button>
+                        </div>
+
+                        <div class="md:col-span-7">
+                            <div id="quizCard" class="p-6 bg-amber-50 rounded-2xl border-2 border-amber-200 hidden space-y-4">
+                                <span id="quizCategory" class="px-3 py-1 bg-pixarOrange text-white font-bold rounded-full text-xs">Kategori</span>
+                                <h4 id="quizQuestion" class="font-bold text-slate-800 text-lg">Pertanyaan...</h4>
+                                <div id="quizOptions" class="space-y-2"></div>
+                            </div>
+
+                            <div id="quizPlaceholder" class="p-8 text-center bg-slate-50 rounded-2xl border-2 border-dashed border-slate-300 text-slate-500">
+                                <i class="fa-solid fa-hand-pointer text-4xl mb-2 text-pixarOrange animate-bounce"></i>
+                                <p class="font-semibold">Klik tombol "Putar Roda!" di sebelah kiri untuk mendapatkan pertanyaan kuis puisi!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GIM 3: BAAMBOOZLE TEAM CHALLENGE -->
+                <div id="game-baamboozle" class="game-module hidden space-y-6">
+                    <div class="flex flex-wrap justify-between items-center border-b pb-3 gap-2">
+                        <h3 class="text-xl font-bold text-pixarDarkBlue"><i class="fa-solid fa-cubes text-pixarGreen mr-2"></i> Gim Baamboozle Challenge (Edisi Puisi)</h3>
+                        <div class="flex gap-4">
+                            <span id="bambooScore1" class="px-4 py-1 bg-sky-100 text-pixarBlue font-bold rounded-full text-sm border border-sky-300">Tim A: 0</span>
+                            <span id="bambooScore2" class="px-4 py-1 bg-rose-100 text-pixarRed font-bold rounded-full text-sm border border-rose-300">Tim B: 0</span>
+                        </div>
+                    </div>
+
+                    <p class="text-sm text-slate-600">Pilih kotak angka! Jawab pertanyaan puisi untuk mengumpulkan poin atau dapatkan kejutan poin bonus!</p>
+
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="baamboozleGrid">
+                        <!-- 12 Dynamic Cards -->
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MODAL POPUP UNTUK SOAL BAAMBOOZLE -->
+    <div id="bambooModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="card-pixar p-6 max-w-lg w-full bg-white space-y-4">
+            <div class="flex justify-between items-center border-b pb-2">
+                <span id="modalTileNum" class="px-3 py-1 bg-pixarGreen text-white font-bold rounded-full text-xs">Kotak #1</span>
+                <span id="modalTilePoints" class="px-3 py-1 bg-amber-100 text-amber-800 font-bold rounded-full text-xs">+15 Poin</span>
+            </div>
+
+            <h3 id="modalQuestion" class="font-bold text-slate-800 text-base md:text-lg">Pertanyaan Baamboozle?</h3>
+            <div id="modalAnswers" class="space-y-2"></div>
+        </div>
+    </div>
+
+    <!-- FOOTER / CREDITS -->
+    <footer class="bg-pixarDarkBlue text-white border-t-4 border-pixarOrange py-4 text-center mt-8">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-2 text-xs md:text-sm">
+            <p class="font-medium">Media Pembelajaran Interaktif Bahasa Indonesia Kelas 9 SMP &copy; 2026</p>
+            <p class="font-bold text-pixarYellow"><i class="fa-solid fa-code mr-1"></i> Pengembang: Asep Sauma, S.Pd.</p>
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // Web Audio Synth for BGM & SFX
+        let audioCtx = null;
+        let isBgmPlaying = false;
+        let bgmInterval = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function playTone(freq, type = 'sine', duration = 0.15) {
+            try {
+                initAudio();
+                if (!audioCtx) return;
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch (e) {}
+        }
+
+        function playCorrectSound() {
+            playTone(523.25, 'triangle', 0.1);
+            setTimeout(() => playTone(659.25, 'triangle', 0.1), 100);
+            setTimeout(() => playTone(783.99, 'triangle', 0.2), 200);
+        }
+
+        function playWrongSound() {
+            playTone(300, 'sawtooth', 0.15);
+            setTimeout(() => playTone(220, 'sawtooth', 0.25), 150);
+        }
+
+        function toggleBGM() {
+            initAudio();
+            isBgmPlaying = !isBgmPlaying;
+            const btnIcon = document.getElementById('bgmIcon');
+            const btnText = document.getElementById('bgmText');
+
+            if (isBgmPlaying) {
+                btnIcon.className = "fa-solid fa-volume-high text-emerald-500";
+                btnText.innerText = "Musik On";
+                startSimpleBgm();
+            } else {
+                btnIcon.className = "fa-solid fa-volume-xmark text-red-500";
+                btnText.innerText = "Musik Off";
+                clearInterval(bgmInterval);
+            }
+        }
+
+        function startSimpleBgm() {
+            const notes = [261.63, 329.63, 392.00, 523.25, 392.00, 329.63];
+            let noteIdx = 0;
+            bgmInterval = setInterval(() => {
+                if (!isBgmPlaying) return;
+                playTone(notes[noteIdx], 'sine', 0.2);
+                noteIdx = (noteIdx + 1) % notes.length;
+            }, 600);
+        }
+
+        // Navigation Tab Switch
+        function showSection(sectionId) {
+            playTone(400, 'sine', 0.05);
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(sectionId).classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function showPuisiSub(subId) {
+            playTone(450, 'sine', 0.05);
+            document.querySelectorAll('.puisi-sub-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById('puisi-' + subId).classList.remove('hidden');
+
+            document.querySelectorAll('.puisi-sub-btn').forEach(btn => {
+                btn.className = "puisi-sub-btn px-4 py-2 rounded-xl bg-slate-100 text-slate-700 font-bold text-sm hover:bg-slate-200";
+            });
+            event.target.className = "puisi-sub-btn px-4 py-2 rounded-xl bg-pixarGreen text-white font-bold text-sm";
+        }
+
+        // --- ALGORITMA SEARCH LOGIC ---
+        const poemLines = [
+            { text: "Angin berhembus lembut", key: "Angin" },
+            { text: "Bunga mekar di taman", key: "Bunga" },
+            { text: "Cahaya mentari hangat", key: "Cahaya" },
+            { text: "Embun pagi berkilauan", key: "Embun" }
+        ];
+
+        function renderSearchDisplay(highlightIdx = -1) {
+            const container = document.getElementById('searchDisplay');
+            container.innerHTML = '';
+            poemLines.forEach((item, idx) => {
+                const isHighlight = idx === highlightIdx;
+                container.innerHTML += `
+                    <div class="p-3 rounded-xl border text-xs font-semibold ${isHighlight ? 'bg-pixarYellow text-slate-900 border-amber-400 scale-105' : 'bg-white text-slate-700 border-slate-200'} transition-all">
+                        <p class="text-[10px] text-slate-400 font-mono">Larik #${idx + 1}</p>
+                        <p class="mt-1">${item.text}</p>
+                    </div>
+                `;
+            });
+        }
+
+        async function runLinearSearch() {
+            const query = document.getElementById('searchInput').value.trim().toLowerCase();
+            const logs = document.getElementById('searchLogs');
+            logs.innerHTML = `Mulai Linear Search untuk kata "${query}"...<br>`;
+
+            let found = false;
+            for (let i = 0; i < poemLines.length; i++) {
+                renderSearchDisplay(i);
+                logs.innerHTML += `Memeriksa Larik #${i+1}: "${poemLines[i].text}"...<br>`;
+                await new Promise(r => setTimeout(r, 600));
+
+                if (poemLines[i].text.toLowerCase().includes(query)) {
+                    logs.innerHTML += `<span class="text-emerald-400 font-bold">🎯 Ketemu di Larik #${i+1}!</span>`;
+                    playCorrectSound();
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                renderSearchDisplay(-1);
+                logs.innerHTML += `<span class="text-rose-400">❌ Kata tidak ditemukan dalam larik puisi.</span>`;
+                playWrongSound();
+            }
+        }
+
+        async function runBinarySearch() {
+            const query = document.getElementById('searchInput').value.trim().toLowerCase();
+            const logs = document.getElementById('searchLogs');
+            logs.innerHTML = `Mulai Binary Search (Daftar Terurut Abjad)...<br>`;
+
+            let low = 0, high = poemLines.length - 1;
+            let found = false;
+
+            while (low <= high) {
+                let mid = Math.floor((low + high) / 2);
+                renderSearchDisplay(mid);
+                logs.innerHTML += `Cek Larik Tengah #${mid+1} ("${poemLines[mid].key}")...<br>`;
+                await new Promise(r => setTimeout(r, 800));
+
+                let midVal = poemLines[mid].key.toLowerCase();
+                if (midVal.includes(query)) {
+                    logs.innerHTML += `<span class="text-emerald-400 font-bold">🎯 Ketemu di Larik Tengah #${mid+1}!</span>`;
+                    playCorrectSound();
+                    found = true;
+                    break;
+                } else if (midVal < query) {
+                    low = mid + 1;
+                    logs.innerHTML += `Cari di bagian kanan...<br>`;
+                } else {
+                    high = mid - 1;
+                    logs.innerHTML += `Cari di bagian kiri...<br>`;
+                }
+            }
+            if (!found) {
+                renderSearchDisplay(-1);
+                logs.innerHTML += `<span class="text-rose-400">❌ Kata tidak ditemukan.</span>`;
+                playWrongSound();
+            }
+        }
+
+        // --- ALGORITMA SORT VISUALIZER LOGIC ---
+        let currentAlgo = 'bubble';
+        const rawLines = [
+            "Awan putih berarak tenang",
+            "Mentari menyapa hangat",
+            "Bunga mekar di taman indah",
+            "Angin berbisik lembut"
+        ];
+
+        function setAlgo(algo) {
+            currentAlgo = algo;
+            ['bubble', 'insertion', 'selection'].forEach(a => {
+                document.getElementById('btn-' + a).className = a === algo ? 
+                    "px-3 py-1.5 rounded-lg text-xs font-bold bg-pixarOrange text-white" : 
+                    "px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-700 text-slate-300";
+            });
+            renderSortDisplay(rawLines);
+        }
+
+        function renderSortDisplay(arr, activeIdx = -1) {
+            const display = document.getElementById('sortDisplay');
+            display.innerHTML = '';
+            arr.forEach((text, i) => {
+                const len = text.length;
+                const widthPct = Math.min(100, Math.max(35, len * 3));
+                const isHighlight = i === activeIdx;
+                display.innerHTML += `
+                    <div class="flex items-center gap-3">
+                        <span class="w-6 text-xs text-slate-400 font-mono">${i + 1}</span>
+                        <div class="h-9 ${isHighlight ? 'bg-pixarYellow text-slate-900 font-bold' : 'bg-pixarBlue text-white'} rounded-xl px-3 flex items-center justify-between text-xs transition-all duration-300" style="width: ${widthPct}%">
+                            <span class="truncate">${text}</span>
+                            <span class="ml-2 font-mono text-[10px] bg-black/20 px-1.5 py-0.5 rounded">${len} char</span>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        async function runSortSimulation() {
+            let arr = [...rawLines];
+            const logs = document.getElementById('sortLogs');
+            logs.innerHTML = `Mulai ${currentAlgo.toUpperCase()} Sort...<br>`;
+
+            if (currentAlgo === 'bubble') {
+                for (let i = 0; i < arr.length; i++) {
+                    for (let j = 0; j < arr.length - i - 1; j++) {
+                        renderSortDisplay(arr, j);
+                        logs.innerHTML += `Bandingkan larik ${j+1} (${arr[j].length}) & ${j+2} (${arr[j+1].length})<br>`;
+                        logs.scrollTop = logs.scrollHeight;
+                        await new Promise(r => setTimeout(r, 600));
+
+                        if (arr[j].length > arr[j+1].length) {
+                            let temp = arr[j];
+                            arr[j] = arr[j+1];
+                            arr[j+1] = temp;
+                            renderSortDisplay(arr, j+1);
+                            playTone(600, 'sine', 0.1);
+                            await new Promise(r => setTimeout(r, 500));
+                        }
+                    }
+                }
+            } else if (currentAlgo === 'selection') {
+                for (let i = 0; i < arr.length; i++) {
+                    let minIdx = i;
+                    for (let j = i + 1; j < arr.length; j++) {
+                        renderSortDisplay(arr, j);
+                        logs.innerHTML += `Cari yang terpendek... Cek larik ${j+1}<br>`;
+                        await new Promise(r => setTimeout(r, 500));
+                        if (arr[j].length < arr[minIdx].length) minIdx = j;
+                    }
+                    if (minIdx !== i) {
+                        let temp = arr[i];
+                        arr[i] = arr[minIdx];
+                        arr[minIdx] = temp;
+                        playTone(600, 'sine', 0.1);
+                    }
+                }
+            } else {
+                for (let i = 1; i < arr.length; i++) {
+                    let key = arr[i];
+                    let j = i - 1;
+                    while (j >= 0 && arr[j].length > key.length) {
+                        arr[j + 1] = arr[j];
+                        j = j - 1;
+                        renderSortDisplay(arr, j + 1);
+                        await new Promise(r => setTimeout(r, 500));
+                    }
+                    arr[j + 1] = key;
+                }
+            }
+            renderSortDisplay(arr);
+            logs.innerHTML += `<span class="text-emerald-400 font-bold">✨ Pengurutan Selesai!</span>`;
+            playCorrectSound();
+        }
+
+        // --- GIM SWITCHING ---
+        function switchGame(gameId) {
+            playTone(500, 'sine', 0.05);
+            document.querySelectorAll('.game-module').forEach(el => el.classList.add('hidden'));
+            document.getElementById('game-' + gameId).classList.remove('hidden');
+            if (gameId === 'drag') initDragGame();
+            if (gameId === 'wordwall') drawWheel();
+            if (gameId === 'baamboozle') initBaamboozle();
+        }
+
+        // --- GIM 1: DRAG & DROP & TOUCH SELECTION LOGIC ---
+        const dragData = [
+            { id: 'item-diksi', label: 'Diksi', target: 'fisik' },
+            { id: 'item-tema', label: 'Tema', target: 'batin' },
+            { id: 'item-imaji', label: 'Imaji', target: 'fisik' },
+            { id: 'item-amanat', label: 'Amanat', target: 'batin' },
+            { id: 'item-rima', label: 'Rima / Irama', target: 'fisik' },
+            { id: 'item-rasa', label: 'Rasa (Feeling)', target: 'batin' },
+            { id: 'item-tipografi', label: 'Tipografi', target: 'fisik' },
+            { id: 'item-nada', label: 'Nada (Tone)', target: 'batin' },
+            { id: 'item-majas', label: 'Gaya Bahasa (Majas)', target: 'fisik' },
+            { id: 'item-konkret', label: 'Kata Konkret', target: 'fisik' }
+        ];
+
+        let dragScoreVal = 0;
+        let selectedDragId = null;
+
+        function initDragGame() {
+            dragScoreVal = 0;
+            selectedDragId = null;
+            document.getElementById('dragScore').innerText = "Skor: 0";
+            document.getElementById('target-fisik').innerHTML = '';
+            document.getElementById('target-batin').innerHTML = '';
+
+            const container = document.getElementById('dragItems');
+            container.innerHTML = '';
+            dragData.forEach(item => {
+                container.innerHTML += `
+                    <div draggable="true" ondragstart="drag(event)" onclick="handleCardClick('${item.id}')" id="${item.id}" data-target="${item.target}" class="drag-card px-4 py-2 bg-white font-bold text-slate-700 rounded-xl shadow border-2 border-slate-300 cursor-grab active:cursor-grabbing select-none transition hover:border-pixarOrange text-xs md:text-sm">
+                        ${item.label}
+                    </div>
+                `;
+            });
+        }
+
+        function resetDragGame() {
+            initDragGame();
+            playTone(400, 'sine', 0.1);
+        }
+
+        function handleCardClick(id) {
+            playTone(550, 'sine', 0.05);
+            document.querySelectorAll('.drag-card').forEach(el => el.classList.remove('drag-card-selected'));
+            if (selectedDragId === id) {
+                selectedDragId = null;
+            } else {
+                selectedDragId = id;
+                document.getElementById(id).classList.add('drag-card-selected');
+            }
+        }
+
+        function handleTargetClick(targetCategory) {
+            if (!selectedDragId) return;
+            processDrop(selectedDragId, targetCategory);
+            selectedDragId = null;
+        }
+
+        function allowDrop(ev) { ev.preventDefault(); }
+        function drag(ev) { ev.dataTransfer.setData("text", ev.target.id); }
+
+        function drop(ev, category) {
+            ev.preventDefault();
+            const id = ev.dataTransfer.getData("text");
+            if (id) processDrop(id, category);
+        }
+
+        function processDrop(itemId, category) {
+            const draggedEl = document.getElementById(itemId);
+            if (!draggedEl) return;
+            const targetType = draggedEl.getAttribute('data-target');
+
+            if (targetType === category) {
+                document.getElementById('target-' + category).appendChild(draggedEl);
+                draggedEl.className = "px-3 py-1.5 bg-emerald-100 text-emerald-800 font-bold rounded-xl text-xs border border-emerald-300 shadow-sm";
+                draggedEl.removeAttribute('draggable');
+                draggedEl.onclick = null;
+
+                dragScoreVal += 10;
+                document.getElementById('dragScore').innerText = "Skor: " + dragScoreVal;
+                playCorrectSound();
+            } else {
+                draggedEl.classList.add('animate-shake');
+                setTimeout(() => draggedEl.classList.remove('animate-shake'), 400);
+                playWrongSound();
+            }
+        }
+
+        // --- GIM 2: WORDWALL SPINNER LOGIC ---
+        const wheelQuestions = [
+            { cat: 'Struktur Fisik', q: 'Persamaan bunyi konsonan atau vokal di akhir larik puisi disebut...', opts: ['Rima', 'Diksi', 'Amanat'], ans: 0 },
+            { cat: 'Jenis Puisi', q: 'Puisi lama yang terdiri dari 4 baris dengan rima akhir a-b-a-b adalah...', opts: ['Syair', 'Gurindam', 'Pantun'], ans: 2 },
+            { cat: 'Struktur Batin', q: 'Pesan moral atau nasihat kehidupan yang ingin disampaikan penyair disebut...', opts: ['Nada', 'Amanat', 'Tipografi'], ans: 1 },
+            { cat: 'Gaya Bahasa', q: 'Gaya bahasa yang membandingkan benda mati seolah bertingkah seperti manusia dinamakan...', opts: ['Personifikasi', 'Hiperbola', 'Metafora'], ans: 0 },
+            { cat: 'Struktur Fisik', q: 'Pemilihan kata yang cermat dan indah oleh penyair dinamakan...', opts: ['Tipografi', 'Diksi', 'Imaji'], ans: 1 },
+            { cat: 'Jenis Puisi', q: 'Puisi lama 2 baris yang bersajak a-a dan berisi nasihat agama/moral adalah...', opts: ['Gurindam', 'Pantun', 'Balada'], ans: 0 },
+            { cat: 'Struktur Batin', q: 'Sikap penyair terhadap tema atau perasaan pembaca adalah...', opts: ['Nada (Tone)', 'Amanat', 'Diksi'], ans: 0 },
+            { cat: 'Struktur Fisik', q: 'Kata yang memicu indera penglihatan, pendengaran, atau perabaan pembaca disebut...', opts: ['Imaji', 'Tipografi', 'Amanat'], ans: 0 }
+        ];
+
+        let currentAngle = 0;
+        function drawWheel() {
+            const canvas = document.getElementById('wheelCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const colors = ['#FF9F1C', '#118AB2', '#06D6A0', '#EF476F', '#8338EC', '#3A86EF', '#FF006E', '#FB5607'];
+            const total = wheelQuestions.length;
+            const arc = (2 * Math.PI) / total;
+
+            ctx.clearRect(0, 0, 280, 280);
+            for (let i = 0; i < total; i++) {
+                ctx.beginPath();
+                ctx.fillStyle = colors[i % colors.length];
+                ctx.moveTo(140, 140);
+                ctx.arc(140, 140, 130, i * arc + currentAngle, (i + 1) * arc + currentAngle);
+                ctx.fill();
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                ctx.save();
+                ctx.translate(140, 140);
+                ctx.rotate(i * arc + arc / 2 + currentAngle);
+                ctx.fillStyle = "white";
+                ctx.font = "bold 12px Fredoka";
+                ctx.fillText("Soal #" + (i + 1), 55, 4);
+                ctx.restore();
+            }
+
+            // Pointer Top Arrow
+            ctx.fillStyle = "#073B4C";
+            ctx.beginPath();
+            ctx.moveTo(130, 10);
+            ctx.lineTo(150, 10);
+            ctx.lineTo(140, 30);
+            ctx.fill();
+        }
+
+        let isSpinning = false;
+        function spinWheel() {
+            if (isSpinning) return;
+            isSpinning = true;
+            let spinAngle = Math.random() * 15 + 20;
+            let duration = 2500;
+            let start = null;
+
+            function animateWheel(timestamp) {
+                if (!start) start = timestamp;
+                let progress = timestamp - start;
+                currentAngle += (spinAngle * (1 - progress / duration)) * 0.05;
+                drawWheel();
+                playTone(300 + (progress % 200), 'sine', 0.02);
+
+                if (progress < duration) {
+                    requestAnimationFrame(animateWheel);
+                } else {
+                    isSpinning = false;
+                    showWheelQuiz();
+                }
+            }
+            requestAnimationFrame(animateWheel);
+        }
+
+        let spinnerScoreVal = 0;
+        function showWheelQuiz() {
+            const qIdx = Math.floor(Math.random() * wheelQuestions.length);
+            const data = wheelQuestions[qIdx];
+
+            document.getElementById('quizPlaceholder').classList.add('hidden');
+            const quizCard = document.getElementById('quizCard');
+            quizCard.classList.remove('hidden');
+
+            document.getElementById('quizCategory').innerText = data.cat;
+            document.getElementById('quizQuestion').innerText = data.q;
+
+            const optsDiv = document.getElementById('quizOptions');
+            optsDiv.innerHTML = '';
+            data.opts.forEach((opt, idx) => {
+                optsDiv.innerHTML += `
+                    <button onclick="checkWheelAnswer(${idx === data.ans})" class="w-full text-left p-3 bg-white rounded-xl font-semibold border hover:bg-amber-100 transition text-sm">
+                        ${String.fromCharCode(65 + idx)}. ${opt}
+                    </button>
+                `;
+            });
+        }
+
+        function checkWheelAnswer(isCorrect) {
+            if (isCorrect) {
+                playCorrectSound();
+                spinnerScoreVal += 25;
+                document.getElementById('spinnerScore').innerText = "Skor: " + spinnerScoreVal;
+                alert("🎉 Jawaban kamu Benar! (+25 Poin)");
+            } else {
+                playWrongSound();
+                alert("❌ Jawaban kurang tepat! Coba lagi!");
+            }
+            document.getElementById('quizCard').classList.add('hidden');
+            document.getElementById('quizPlaceholder').classList.remove('hidden');
+        }
+
+        // --- GIM 3: BAAMBOOZLE TEAM LOGIC ---
+        const bambooData = [
+            { pts: 15, q: 'Gaya bahasa perumpamaan berlebihan seperti "Suaramu menggelegar membelah angkasa" disebut...', opts: ['Personifikasi', 'Hiperbola', 'Metafora'], ans: 1 },
+            { pts: 20, q: 'Puisi Baru yang berisi ungkapan duka cita atau kesedihan mendalam dinamakan...', opts: ['Elegi', 'Balada', 'Romansa'], ans: 0 },
+            { pts: 10, q: 'Kumpulan baris dalam sebuah puisi biasanya dibentuk menjadi...', opts: ['Paragraf', 'Bait', 'Kalimat'], ans: 1 },
+            { pts: 25, q: 'Tumpuan gagasan pokok atau perasaan utama yang menjadi dasar puisi adalah...', opts: ['Rima', 'Diksi', 'Tema (Sense)'], ans: 2 },
+            { pts: 15, q: 'Bentuk tata letak, susunan tepi, dan tampilan visual puisi dinamakan...', opts: ['Tipografi', 'Imaji', 'Amanat'], ans: 0 },
+            { pts: 30, q: 'BONUS POIN! Puisi kamu sungguh indah!', isBonus: true },
+            { pts: 20, q: 'Puisi lama berbentuk kisah cerita panjang dengan rima a-a-a-a adalah...', opts: ['Syair', 'Pantun', 'Gurindam'], ans: 0 },
+            { pts: 15, q: 'Manakah yang TERMASUK struktur batin puisi?', opts: ['Diksi & Tipografi', 'Rasa & Amanat', 'Rima & Majas'], ans: 1 },
+            { pts: 25, q: 'Puisi yang mengutamakan kebebasan visual tanpa aturan baku zaman sekarang dinamakan...', opts: ['Puisi Lama', 'Puisi Baru', 'Puisi Kontemporer'], ans: 2 },
+            { pts: 20, q: 'Makna kata yang tidak sebenarnya (bermakna kiasan) disebut makna...', opts: ['Konotatif', 'Denotatif', 'Kamus'], ans: 0 },
+            { pts: 15, q: 'Sikap perasaan penyair yang tergambar saat menulis puisi dinamakan...', opts: ['Rasa (Feeling)', 'Tipografi', 'Imaji'], ans: 0 },
+            { pts: 30, q: 'KEJUTAN POIN! Tim kamu mendapat energi Penyair!', isBonus: true }
+        ];
+
+        let scoreA = 0, scoreB = 0;
+        let currentTeam = 1;
+
+        function initBaamboozle() {
+            const grid = document.getElementById('baamboozleGrid');
+            grid.innerHTML = '';
+            bambooData.forEach((item, idx) => {
+                grid.innerHTML += `
+                    <div id="tile-${idx}" onclick="openBambooTile(${idx})" class="h-24 bg-gradient-to-br from-pixarGreen to-emerald-600 text-white rounded-2xl flex flex-col items-center justify-center font-extrabold text-2xl shadow-md cursor-pointer hover:scale-105 transition border-4 border-white">
+                        <span>#${idx + 1}</span>
+                        <span class="text-[10px] font-normal opacity-90">Klik Buka</span>
+                    </div>
+                `;
+            });
+        }
+
+        function openBambooTile(idx) {
+            const data = bambooData[idx];
+            const tile = document.getElementById('tile-' + idx);
+            tile.onclick = null;
+            tile.className = "h-24 bg-slate-200 text-slate-400 rounded-2xl flex items-center justify-center font-bold text-sm border-2 border-slate-300";
+            tile.innerHTML = "Terbuka";
+
+            if (data.isBonus) {
+                playCorrectSound();
+                if (currentTeam === 1) scoreA += data.pts; else scoreB += data.pts;
+                updateBambooScores();
+                alert(`🎁 KEJUTAN! Tim ${currentTeam === 1 ? 'A' : 'B'} dapat bonus +${data.pts} Poin!`);
+                currentTeam = currentTeam === 1 ? 2 : 1;
+                return;
+            }
+
+            document.getElementById('modalTileNum').innerText = `Kotak #${idx + 1} (Giliran Tim ${currentTeam === 1 ? 'A' : 'B'})`;
+            document.getElementById('modalTilePoints').innerText = `+${data.pts} Poin`;
+            document.getElementById('modalQuestion').innerText = data.q;
+
+            const modalAns = document.getElementById('modalAnswers');
+            modalAns.innerHTML = '';
+            data.opts.forEach((opt, oIdx) => {
+                modalAns.innerHTML += `
+                    <button onclick="submitBambooAnswer(${oIdx === data.ans}, ${data.pts})" class="w-full text-left p-3 bg-slate-100 hover:bg-emerald-100 rounded-xl font-semibold text-slate-800 text-sm transition">
+                        ${opt}
+                    </button>
+                `;
+            });
+            document.getElementById('bambooModal').classList.remove('hidden');
+        }
+
+        function submitBambooAnswer(isCorrect, pts) {
+            document.getElementById('bambooModal').classList.add('hidden');
+            if (isCorrect) {
+                playCorrectSound();
+                if (currentTeam === 1) scoreA += pts; else scoreB += pts;
+                alert(`✨ Jawaban Benar! Tim ${currentTeam === 1 ? 'A' : 'B'} mendapatkan +${pts} Poin.`);
+            } else {
+                playWrongSound();
+                alert("❌ Jawaban Salah! Poin tidak bertambah.");
+            }
+            updateBambooScores();
+            currentTeam = currentTeam === 1 ? 2 : 1;
+        }
+
+        function updateBambooScores() {
+            document.getElementById('bambooScore1').innerText = "Tim A: " + scoreA;
+            document.getElementById('bambooScore2').innerText = "Tim B: " + scoreB;
+        }
+
+        // Initialize defaults
+        window.onload = function() {
+            renderSearchDisplay();
+            setAlgo('bubble');
+            initDragGame();
+        };
+    </script>
+</body>
+</html>
